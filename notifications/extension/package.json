@@ -1,0 +1,105 @@
+{
+  "name": "antigravity-notification-enhancer",
+  "displayName": "Antigravity Notification Enhancer",
+  "description": "Dynamic Windows notifications for Antigravity IDE: same-active-chat support, clean titles, RTL proxy chaining, and auto-repatch after IDE updates.",
+  "version": "2.0.0",
+  "publisher": "local-agy",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "antigravityNotif.applyPatch",
+        "title": "Antigravity Notifications: Apply / Re-apply Patch"
+      },
+      {
+        "command": "antigravityNotif.showStatus",
+        "title": "Antigravity Notifications: Show Status"
+      },
+      {
+        "command": "antigravityNotif.testToast",
+        "title": "Antigravity Notifications: Send Test Toast"
+      },
+      {
+        "command": "antigravityNotif.openConfig",
+        "title": "Antigravity Notifications: Open Config JSON"
+      },
+      {
+        "command": "antigravityNotif.restoreBackup",
+        "title": "Antigravity Notifications: Restore Original Backup"
+      }
+    ],
+    "configuration": {
+      "title": "Antigravity Notifications",
+      "properties": {
+        "antigravityNotifications.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable enhanced Antigravity notifications, clean titles, and webview proxy."
+        },
+        "antigravityNotifications.notifyWhenFocused": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Windows notifications even when the Antigravity IDE window is focused."
+        },
+        "antigravityNotifications.notifySameActiveChat": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notifications even while actively viewing the conversation that finished or asked for input."
+        },
+        "antigravityNotifications.showOpenChatBannerInSameChat": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show the in-IDE 'Open Chat / Dismiss' corner banner when already viewing that chat."
+        },
+        "antigravityNotifications.soundMode": {
+          "type": "string",
+          "enum": [
+            "respectPayload",
+            "windows",
+            "antigravity",
+            "both",
+            "silent"
+          ],
+          "default": "respectPayload",
+          "description": "Audio policy: respectPayload silences Windows chime if Antigravity MP3 already played."
+        },
+        "antigravityNotifications.dedupeWindowMs": {
+          "type": "number",
+          "default": 2500,
+          "minimum": 0,
+          "maximum": 60000,
+          "description": "Duplicate notification suppression window in milliseconds (0 disables)."
+        },
+        "antigravityNotifications.autoPatchOnUpdate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically re-apply notification hooks when an Antigravity IDE update overwrites resources/app."
+        },
+        "antigravityNotifications.promptReloadAfterUpdate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a 'Reload Window' prompt button after auto-patching a new IDE version."
+        },
+        "antigravityNotifications.finishedTitleTemplate": {
+          "type": "string",
+          "default": "{body}",
+          "description": "Line 1 template for finished agent notifications ({body}, {title}, {appName})."
+        },
+        "antigravityNotifications.finishedBodyTemplate": {
+          "type": "string",
+          "default": "",
+          "description": "Line 2 template for finished agent notifications (leave empty for clean single-line toast)."
+        }
+      }
+    }
+  }
+}

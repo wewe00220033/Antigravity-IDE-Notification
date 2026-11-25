@@ -1,8 +1,9 @@
-# 🔔 Antigravity IDE Notification
+# Antigravity IDE Notification
 
-مستودع مخصص لأدوات وباتشات إشعارات **Antigravity IDE** على ويندوز.
+أداة متكاملة ومقاومة للتحديثات لإصلاح وتخصيص إشعارات ويندوز (**Windows Toast Notifications**) في **Antigravity IDE** (`v2.6+` – `v2.9+`) و**Hub `agy.exe` (`v2.34+`)**:
+- ✅ تفعيل الإشعارات حتى أثناء وجودك داخل **نفس الشات النشط** والنافذة مفتوحة
+- ✅ إزالة بادئة `Agent finished:` وتكرار `Antigravity — Antigravity` وإظهار **اسم المحادثة فقط** بوضوح
+- ✅ حماية تلقائية ضد تحديثات الـ IDE عبر إضافة دائمة في `.antigravity-ide/extensions/` مع تنبيه `Reload Window` عند الترقية
+- ✅ إعدادات JSON وSettings حية بدون ريستارت وتوافق كامل مع إضافة التعريب `RTL`
 
-## 📂 المجلدات
-- **[`notifications/`](./notifications/)** — الباتشر الشامل لإصلاح وتفعيل إشعارات ويندوز (Windows Toast) في Antigravity IDE `2.6` / `2.7` / `2.8+` مع أدوات الفحص والاختبار والنسخ الاحتياطي بضغطة واحدة.
-
-ابدأ مباشرة من دليل التشغيل داخل **[`notifications/README.md`](./notifications/README.md)**.
+للتفاصيل والتشغيل والاختبارات افتح مجلد [`notifications/`](./notifications/README.md).

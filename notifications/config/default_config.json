@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "enabled": true,
+  "notifyWhenFocused": true,
+  "notifySameActiveChat": true,
+  "showOpenChatBannerInSameChat": false,
+  "soundMode": "respectPayload",
+  "dedupeWindowMs": 2500,
+  "autoPatchOnUpdate": true,
+  "promptReloadAfterUpdate": true,
+  "stripPrefixes": [
+    "Agent finished: "
+  ],
+  "fallbackFinishedText": "Agent finished",
+  "events": {
+    "finished": {
+      "enabled": true,
+      "titleTemplate": "{body}",
+      "bodyTemplate": ""
+    },
+    "askQuestion": {
+      "enabled": true,
+      "titleTemplate": "{title}",
+      "bodyTemplate": "{body}"
+    },
+    "runCommand": {
+      "enabled": true,
+      "titleTemplate": "{title}",
+      "bodyTemplate": "{body}"
+    },
+    "openBrowserUrl": {
+      "enabled": true,
+      "titleTemplate": "{title}",
+      "bodyTemplate": "{body}"
+    },
+    "permission": {
+      "enabled": true,
+      "titleTemplate": "{title}",
+      "bodyTemplate": "{body}"
+    },
+    "unknown": {
+      "enabled": true,
+      "titleTemplate": "{title}",
+      "bodyTemplate": "{body}"
+    }
+  }
+}

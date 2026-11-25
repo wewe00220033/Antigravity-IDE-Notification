@@ -1,52 +1,66 @@
-# 🔔 إشعارات Antigravity IDE على ويندوز (`notifications`)
+# 🔔 إشعارات Antigravity IDE الاحترافية على ويندوز (`notifications v2.0`)
 
-أداة تلقائية لإصلاح وتفعيل إشعارات ويندوز المنبثقة (**Windows Toast Notifications**) في **Antigravity IDE** (الإصدارات `2.6.x` و `2.7.x` و `2.8.x` وما بعدها)، بحيث ترجع الإشعارات تشتغل فوراً حتى بعد أي تحديث جديد للبرنامج، وحتى أثناء وجودك وتركيزك داخل نافذة الـ IDE.
-
----
-
-## 🎯 المشكلة اللي الأداة بتحلها
-بعد تحديث Antigravity IDE (من `2.5.5` إلى `2.6.0` ثم `2.8.0`)، ملفات `resources/app/` بتتبدل بالكامل، وفي النسخ الجديدة بيكون فيه 3 عوائق في ملف `extensions/agy/vscode/extension.js`:
-1. **معرّف تطبيق خاطئ (`AGY_NOTIFY_APP_ID`):** الكود بيبعت `"Microsoft.VisualStudioCode"` ويدور على `*Visual Studio Code*`، بينما معرف التطبيق المسجل في ويندوز هو `Google.AntigravityIDE` (`Antigravity IDE`)، فـ PowerShell بيخرج بصمت بـ `exit 1`.
-2. **حجب الإشعار وقت التركيز (Outer Guard):** الدالة `showBrowserNotification` بترجع `{}` لو نافذة الـ IDE مفتوحة ومُركز عليها (`n.window.state.focused`).
-3. **حجب إضافي جوه `VscodeNotificationDelegate` (Inner Guard):** بيلغي استدعاء `showSystemNotification` لو `window.state.focused` شغال.
+نظام ديناميكي مرن ومقاوم لتحديثات **Antigravity IDE (`2.6+` – `2.9+`)** و**`agy.exe` Hub (`2.34+`)** لإظهار إشعارات ويندوز الفورية (**Windows Toast**) بدون انقطاع — حتى وأنت داخل **نفس الشات النشط** — مع تنظيف كلمة `Agent finished:` وتكرار `Antigravity — Antigravity`، وإعادة التفعيل التلقائي بعد تحديثات البرنامج.
 
 ---
 
-## 🚀 التشغيل السريع (على أي جهاز ويندوز في ثواني)
+## 🎯 المشاكل التي يعالجها النظام
 
-1. افتح مجلد `notifications` وشغّل دبل كليك على:
-   - **`apply_patch.bat`**
-   *(بيكتشف مسار `Antigravity IDE` تلقائياً، يقرأ الـ `win32AppUserModelId` من `product.json`، ياخد نسخة احتياطية آمنة، يطبق الباتش، يفحص سلامة صياغة JavaScript، وبعدها يبعتلك إشعار تجريبي حي على ويندوز).*
-2. جوه **Antigravity IDE** اضغط `Ctrl + Shift + P` واكتب:
-   ```text
-   Developer: Reload Window
-   ```
-   واضغط `Enter`.
-3. تأكد مرة واحدة من `Ctrl + Shift + P` ⬅️ `Antigravity: Open Settings` ⬅️ **`Notifications`** إن:
-   - ✅ `Enable Notifications for Agent` مفعّل.
-   - ✅ `Enable Sounds for Agent` مفعّل.
+1. **اختفاء الإشعار والصوت داخل نفس الشات النشط (`agy.exe v2.34.0+`):**
+   في الكود السحابي للواجهة (`/main.js`), دالة `isConversationInView` وخدمة `WebNotificationService` (`document.hasFocus()`) تمنعان الصوت والتنبيه عندما تكون في نفس المحادثة المفتوحة. يتم تجاوز هذا الحجب جراحياً وبأمان في طبقة البروكسي دون تزييف `document.hasFocus()` لبقية المحرر (لصق/نسخ/تركيز).
+2. **قص اسم المحادثة العربي بـ `Agent finished:` وتكرار `Antigravity — Antigravity`:**
+   يُنظف المنسّق البادئة ويُظهر **اسم المحادثة بوضوح** فقط في السطر الأول مع الحفاظ الكامل على وضوح إشعارات الأسئلة وطلبات الإذن (`askQuestion` / `runCommand`).
+3. **مسح التعديل مع تحديثات IDE (`2.9.0+`) وتجاهل `silent`:**
+   إضافة VS Code مستقلة في `%USERPROFILE%\.antigravity-ide\extensions\` تراقب ملفات البرنامج، وتعيد تطبيق الباتش تلقائياً مع فحص الـ Syntax وطلب `Reload Window` بزر واحد، مع احترام إشارة `silent` لمنع تكرار صوتين معاً.
+4. **توافق 100% مع إضافة التعريب (`RTL`):**
+   يتسلسل بروكسي الإشعارات (`__agyNotifProxyUrl`) بعد خطاف `__rtlChatProxyUrl` الخاص بـ `batalelo.antigravity-rtl-patcher` دون المساس بعلامات `RTL-PATCH-START/END`.
 
 ---
 
-## 📂 محتويات المجلد
+## 🏗️ البنية المعيارية
 
-- `patch_notifications.py`: الباتشر الشامل (Idempotent & Multi-Version + Syntax Check + Auto Rollback).
-- `test_toast.ps1`: اختبار مستقل لإرسال إشعار WinRT Toast والتحقق من تسجيل `Google.AntigravityIDE`.
-- `apply_patch.bat`: تشغيل الباتش + الاختبار الحي بضغطة واحدة.
-- `check_status.bat`: فحص حالة الباتش على الجهاز الحالي.
-- `test_toast.bat`: اختبار إشعار ويندوز مباشرة.
-- `restore_backup.bat`: استرجاع النسخة الأصلية من `extension.js` عند الحاجة.
-- `_run.bat`: مشغّل بايثون مشترك لكل ملفات `.bat`.
-- `tests/test_patch_notifications.py`: اختبارات وحدة تغطي `v2.6` و `v2.8` والحفاظ على باتش الـ RTL العربي.
+- `config/default_config.json`: المخطط المرقّم الافتراضي (`schemaVersion: 1`) لقوالب العرض، الصوت، نفس الشات، ومنع التكرار.
+- `core/`:
+  - `config_store.js`: تحميل/تحديث JSON الحي في `%USERPROFILE%\.antigravity-notifications\config.json` مع fallback تلقائي عند التلف.
+  - `formatter.js`: تصنيف الأحداث عبر `id` (وليس `payload.type` المشترك)، تنظيف النصوص، حل سياسة الصوت (`soundMode`), ومنع التكرار خلال نافذة زمنية.
+  - `main_js_rewriter.js`: إعادة كتابة `/main.js` عبر 3 مراسي فريدة + كاش بالـ `ETag` مع سقوط آمن (`pass-through`) إن تغيّرت البنية مستقبلاً.
+  - `extension_patcher.js`: محرك باتش موحد لـ `extension.js` بمراسي غير معتمدة على أسماء مضغوطة ونسخ احتياطية مقيدة بالإصدار والـ `SHA-256`.
+  - `proxy_runtime.js`: بروكسي HTTP/WebSocket متسلسل يقدّم الإعدادات حياً على `/__agy_notif_cfg.js`.
+- `extension/`: إضافة VS Code الدائمة (`local-agy.antigravity-notification-enhancer`) بمؤشر في شريط الحالة وإعدادات في VS Code UI متزامنة مع `config.json`.
+- `patch_notifications.py` & `*.bat`: مثبّت ومُشغّل سطر الأوامر (يستخدم Node المدمج في `Antigravity IDE.exe` دون الحاجة لتثبيت Node خارجي).
+- `tests/`: اختبارات الوحدة والتكامل (`js_tests.mjs` + `test_patch_notifications.py`).
 
 ---
 
-## 🛠️ أوامر CLI المتقدمة
+## 🚀 التثبيت والتشغيل السريع
+
+1. شغّل **`apply_patch.bat`** (أو من التيرمنال: `python notifications/patch_notifications.py --apply --test`).
+   - يثبت الإضافة الدائمة في `%USERPROFILE%\.antigravity-ide\extensions\`
+   - ينسخ الـ Runtime والإعدادات إلى `%USERPROFILE%\.antigravity-notifications\`
+   - يطبّق الباتش بعد فحص الـ Syntax والنسخ الاحتياطي المرتبط بالإصدار
+   - يرسل إشعار Windows Toast تجريبي حي
+2. داخل **Antigravity IDE** نفّذ `Ctrl + Shift + P` ⬅️ **`Developer: Reload Window`**.
+
+---
+
+## ⚙️ الإعدادات الحية (`config.json` أو Settings)
+
+تتحدث الإعدادات **فوراً بدون إعادة تشغيل**:
+- عبر Command Palette: `Antigravity Notifications: Open Config JSON`
+- أو من **Settings** تحت قسم `Antigravity Notifications` (`antigravityNotifications.*`):
+  - `notifySameActiveChat` (`true`): إظهار التنبيه داخل نفس الشات المفتوح.
+  - `notifyWhenFocused` (`true`): إظهار التنبيه حتى مع التركيز على نافذة البرنامج.
+  - `showOpenChatBannerInSameChat` (`false`): إخفاء بانر `Open Chat / Dismiss` الزائد داخل نفس الشات.
+  - `soundMode` (`respectPayload`): يحترم علم `silent` من Antigravity لتفادي صوتين مكررين (أو اختر `windows` / `antigravity` / `both` / `silent`).
+  - `dedupeWindowMs` (`2500`): منع تكرار نفس التنبيه خلال 2.5 ثانية.
+
+---
+
+## 🧪 الأوامر والاختبارات
 
 ```powershell
 python notifications/patch_notifications.py --status
 python notifications/patch_notifications.py --apply --test
 python notifications/patch_notifications.py --restore
+python -m unittest discover -s notifications/tests -v
 ```
-
-> ملاحظة: متوافق 100% مع إضافة التعريب `batalelo.antigravity-rtl-patcher` ولا يؤثر على ملفات `product.json` checksums.

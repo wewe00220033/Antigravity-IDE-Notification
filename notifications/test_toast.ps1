@@ -1,7 +1,9 @@
 ﻿param(
-    [string]$Title = "Antigravity — Notification Test",
-    [string]$Body = "Windows Toast notifications are active and working!",
-    [string]$AppId = "Google.AntigravityIDE"
+    [string]$Title = "Antigravity Notification Test",
+    [string]$Body = "",
+    [string]$AppId = "Google.AntigravityIDE",
+    [switch]$Silent,
+    [string]$LaunchUri = "antigravity-ide://google.google-antigravity/open-conversation"
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,7 +16,7 @@ if ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage") {
 $Apps = @(Get-StartApps)
 $App = $Apps | Where-Object { $_.AppID -eq $AppId } | Select-Object -First 1
 if (-not $App) {
-    $App = $Apps | Where-Object { $_.Name -like "*Antigravity*" } | Select-Object -First 1
+    $App = $Apps | Where-Object { $_.Name -like "*Antigravity*" -or $_.Name -like "*Visual Studio Code*" } | Select-Object -First 1
 }
 if (-not $App -or -not $App.AppID) {
     Write-Error "Could not find Antigravity IDE in Get-StartApps. Registered Antigravity apps: $(($Apps | Where-Object { $_.Name -like '*Antigravity*' } | Out-String))"
@@ -49,7 +51,7 @@ $TemplateType = if ($IconUri) {
 $Template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent($TemplateType)
 $RawXml = [xml]$Template.GetXml()
 $RawXml.toast.SetAttribute("activationType", "protocol")
-$RawXml.toast.SetAttribute("launch", "antigravity-ide://google.google-antigravity/open-conversation")
+$RawXml.toast.SetAttribute("launch", $LaunchUri)
 
 if ($IconUri) {
     $RawXml.toast.visual.binding.SetAttribute("template", "ToastGeneric")
@@ -58,7 +60,14 @@ if ($IconUri) {
 }
 
 ($RawXml.toast.visual.binding.text | Where-Object { $_.id -eq "1" }).AppendChild($RawXml.CreateTextNode($Title)) | Out-Null
-($RawXml.toast.visual.binding.text | Where-Object { $_.id -eq "2" }).AppendChild($RawXml.CreateTextNode($Body)) | Out-Null
+if ($Body) {
+    ($RawXml.toast.visual.binding.text | Where-Object { $_.id -eq "2" }).AppendChild($RawXml.CreateTextNode($Body)) | Out-Null
+}
+if ($Silent.IsPresent) {
+    $Audio = $RawXml.CreateElement("audio")
+    $Audio.SetAttribute("silent", "true")
+    $RawXml.toast.AppendChild($Audio) | Out-Null
+}
 
 $SerializedXml = New-Object Windows.Data.Xml.Dom.XmlDocument
 $SerializedXml.LoadXml($RawXml.OuterXml)
