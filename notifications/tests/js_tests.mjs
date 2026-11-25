@@ -76,9 +76,12 @@ test('config_store loads defaults, merges partial config, and falls back on corr
     assert.equal(first.config.events.finished.titleTemplate, '{body}');
     assert.equal(first.config.events.finished.bodyTemplate, '');
 
-    // Partial update preserves defaults
-    const saved = configStore.saveConfig({ soundMode: 'windows', events: { finished: { titleTemplate: 'Done: {body}' } } }, tmpHome);
-    assert.equal(saved.soundMode, 'windows');
+    // Partial update preserves defaults + schema v1 respectPayload migrates cleanly to windows
+    fs.writeFileSync(configStore.getConfigPath(tmpHome), JSON.stringify({ schemaVersion: 1, soundMode: 'respectPayload' }), 'utf8');
+    assert.equal(configStore.loadConfig(tmpHome).config.soundMode, 'windows');
+
+    const saved = configStore.saveConfig({ soundMode: 'silent', events: { finished: { titleTemplate: 'Done: {body}' } } }, tmpHome);
+    assert.equal(saved.soundMode, 'silent');
     assert.equal(saved.events.finished.titleTemplate, 'Done: {body}');
     assert.equal(saved.events.askQuestion.enabled, true);
 
@@ -97,6 +100,7 @@ test('formatter classifies payload.type=request_action properly via id prefix an
   const cfg = configStore.cloneDefaultConfig();
 
   // agent-finished always emits payload.type === "request_action" upstream!
+  // Default soundMode ("windows") ensures Windows chime plays even if upstream sets silent: true
   const fin = formatter.formatNotification(
     {
       id: 'agent-finished-abc-12',
@@ -113,8 +117,15 @@ test('formatter classifies payload.type=request_action properly via id prefix an
   assert.equal(fin.eventType, 'finished');
   assert.equal(fin.title, 'الذكاء الاصطناعي للمزودين');
   assert.equal(fin.body, '');
-  assert.equal(fin.silent, true);
+  assert.equal(fin.silent, false);
   assert.equal(fin.suppressOpenChatToast, true);
+
+  // When explicitly set to respectPayload, upstream silent: true is preserved
+  const finRespect = formatter.formatNotification(
+    { id: 'agent-finished-abc-13', title: 'Antigravity', body: 'Agent finished: Test', silent: true },
+    { ...cfg, soundMode: 'respectPayload' }
+  );
+  assert.equal(finRespect.silent, true);
 
   // AskQuestion preserves question clearly and shows Open Chat banner when outside same chat
   const qRes = formatter.formatNotification(

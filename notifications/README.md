@@ -51,7 +51,7 @@
   - `notifySameActiveChat` (`true`): إظهار التنبيه داخل نفس الشات المفتوح.
   - `notifyWhenFocused` (`true`): إظهار التنبيه حتى مع التركيز على نافذة البرنامج.
   - `showOpenChatBannerInSameChat` (`false`): إخفاء بانر `Open Chat / Dismiss` الزائد داخل نفس الشات.
-  - `soundMode` (`respectPayload`): يحترم علم `silent` من Antigravity لتفادي صوتين مكررين (أو اختر `windows` / `antigravity` / `both` / `silent`).
+  - `soundMode` (`windows`): يشغّل صوت إشعار ويندوز الافتراضي دائماً لتفادي كتم الصوت في Webview (أو اختر `respectPayload` / `antigravity` / `both` / `silent`).
   - `dedupeWindowMs` (`2500`): منع تكرار نفس التنبيه خلال 2.5 ثانية.
 
 ---

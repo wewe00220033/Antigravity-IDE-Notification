@@ -79,7 +79,12 @@ function normalizeConfig(raw) {
   }
 
   if (typeof raw.soundMode === 'string' && VALID_SOUND_MODES.has(raw.soundMode)) {
-    base.soundMode = raw.soundMode;
+    // Migrate v1 auto-default 'respectPayload' (which silenced Windows Toast when webview audio was blocked) to 'windows'
+    if (raw.schemaVersion === 1 && raw.soundMode === 'respectPayload') {
+      base.soundMode = 'windows';
+    } else {
+      base.soundMode = raw.soundMode;
+    }
   }
 
   if (typeof raw.dedupeWindowMs === 'number' && Number.isFinite(raw.dedupeWindowMs) && raw.dedupeWindowMs >= 0) {

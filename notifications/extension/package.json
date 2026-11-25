@@ -63,14 +63,14 @@
         "antigravityNotifications.soundMode": {
           "type": "string",
           "enum": [
-            "respectPayload",
             "windows",
+            "respectPayload",
             "antigravity",
             "both",
             "silent"
           ],
-          "default": "respectPayload",
-          "description": "Audio policy: respectPayload silences Windows chime if Antigravity MP3 already played."
+          "default": "windows",
+          "description": "Audio policy: windows (default) always plays Windows Toast sound; respectPayload honors upstream silent flag."
         },
         "antigravityNotifications.dedupeWindowMs": {
           "type": "number",
