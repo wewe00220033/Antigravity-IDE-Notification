@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.bak
+*.notif_*
+*.log
+.pytest_cache/
+.env
+keys.*
+*.secret*
